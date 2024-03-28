@@ -2,7 +2,7 @@
 
 # Help function
 function show_help {
-    echo "Usage: ./script.sh [options]"
+    echo "Usage: $0 [options]"
     echo "Options:"
     echo "  -p, --param <name> iscsid param to change"
     echo "  -v, --value <time> param value to set"
