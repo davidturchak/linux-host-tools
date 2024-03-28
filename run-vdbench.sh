@@ -12,10 +12,11 @@ display_usage() {
 }
 
 # Default values
-rdpct=100
+rdpct=0
 xfersize=128k
 seekpct=EOF
 forthreads=20
+compratio=3
 
 # Parse arguments
 while getopts ":r:x:s:t:" opt; do
@@ -39,7 +40,7 @@ d=1
 
 # Populate temp.txt with configuration parameters
 echo debug=88 > temp.txt
-echo compratio=3 >> temp.txt
+echo compratio=$compratio >> temp.txt
 echo data_errors=1 >> temp.txt
 
 # Iterate through the output of multipath command, filter by certain criteria, and append to temp.txt
