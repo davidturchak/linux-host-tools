@@ -115,7 +115,7 @@ create_multipath_conf
 restart_multipath
 
 # Create a file to indicate completion
-touch /root/k2_ready
+touch "/root/sdp_ready_$(date +"%Y%m%d_%H%M%S")"
 
 echo "Setup completed successfully."
 exit 0
