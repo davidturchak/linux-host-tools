@@ -80,5 +80,10 @@ if [ -n "$first_iscsi_ip" ]; then
     # Discover targets portals using stored IP and connect all
     discover_and_connect_targets $first_iscsi_ip
 else
-    echo "No iSCSI session found."
+    echo "No iSCSI session found. But i will change the param anyway."
+    # Change the parameter in iscsid.conf
+    change_iscsid_param $ParamName $ParamVal
+    
+    # Restart iscsid service
+    restart_iscsid_service
 fi
