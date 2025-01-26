@@ -4,9 +4,17 @@ import psutil
 import time
 import os
 import argparse
+import shutil
+import sys
 
 # Parameters
 sampling_interval = 1  # In seconds
+
+def check_gnuplot_availability():
+    """Verify if Gnuplot is available on the system."""
+    if not shutil.which("gnuplot"):
+        print("Gnuplot is not available. Please install it before executing.")
+        sys.exit(1)
 
 def collect_cpu_usage(output_file, interval, duration):
     """Collect CPU usage data, including %user, %system, and %softirq."""
@@ -48,6 +56,9 @@ def generate_gnuplot_script(data_file, script_file, output_png):
         file.write(script_content)
 
 def main():
+    # Check if Gnuplot is available
+    check_gnuplot_availability()
+
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Monitor and plot CPU usage.")
     parser.add_argument("--duration", type=int, required=True, help="Duration to collect CPU usage data (in seconds).")
@@ -81,4 +92,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
