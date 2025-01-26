@@ -37,6 +37,10 @@ def collect_cpu_usage(output_file, interval, duration):
             file.write(
                 f"{elapsed_time:.2f}\t{cpu_times.user:.2f}\t{cpu_times.system:.2f}\t{softirq:.2f}\n"
             )
+
+            # Print the data to stdout
+            print(f"Time: {elapsed_time:.2f}s, %User: {cpu_times.user:.2f}, %System: {cpu_times.system:.2f}, %SoftIRQ: {softirq:.2f}")
+
             time.sleep(interval)
 
 def generate_gnuplot_script(data_file, script_file, output_png):
@@ -48,8 +52,8 @@ def generate_gnuplot_script(data_file, script_file, output_png):
     set xlabel "Time (s)"
     set ylabel "CPU Usage (%)"
     set grid
-    plot "{data_file}" using 1:2 with lines title "%User" lw 2 linecolor "blue", \\
-         "{data_file}" using 1:3 with lines title "%System" lw 2 linecolor "red", \\
+    plot "{data_file}" using 1:2 with lines title "%User" lw 2 linecolor "blue", \
+         "{data_file}" using 1:3 with lines title "%System" lw 2 linecolor "red", \
          "{data_file}" using 1:4 with lines title "%SoftIRQ" lw 2 linecolor "orange"
     """
     with open(script_file, "w") as file:
