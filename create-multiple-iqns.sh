@@ -102,15 +102,11 @@ if [[ "$CMD" != "connect" && "$CMD" != "disconnect" ]]; then
 fi
 
 get_target_iqn() {
-    if ! ping -c 1 -W 2 "$TP" &> /dev/null; then
-        print_log e "$TP is unreachable."
-    fi
-    print_log i "$TP is alive"
-    
     TIQN=$(iscsiadm -m discovery -t st -p "$TP" -P 1 | grep Target | awk '{print $2}')
     if [ -z "$TIQN" ]; then
         print_log e "Failed to discover target IQN for $TP"
     fi
+    print_log i "Discovered target IQN: $TIQN"
 }
 
 create_ifaces() {
