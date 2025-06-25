@@ -16,7 +16,7 @@ show_help() {
 # Check for dependencies
 missing_tools=()
 command -v tcpdump >/dev/null 2>&1 || missing_tools+=("tcpdump")
-command -v tshark  >/dev/null 2>&1 || missing_tools+=("tshark")
+command -v tshark  >/dev/null 2>&1 || missing_tools+=("wireshark-cli")
 
 if [[ ${#missing_tools[@]} -gt 0 ]]; then
     echo "Missing required tool(s): ${missing_tools[*]}"
