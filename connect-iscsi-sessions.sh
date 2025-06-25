@@ -5,19 +5,18 @@
 # Function to display help message
 show_help() {
     cat << EOF
-Usage: $0 [-h|--help] <cnode_dataport_ip> <num_of_sessions>
+Usage: $0 [-h|--help] -t|--tgt_ip <ip_address> -n|--num_sessions <num_of_sessions>
 
 Configure iSCSI connections with specified number of sessions per target.
 
-Arguments:
-  cnode_dataport_ip    IP address of the iSCSI target
-  num_of_sessions      Number of sessions per iSCSI target
-
 Options:
   -h, --help           Display this help message and exit
+  -t, --tgt_ip         IP address of the iSCSI target
+  -n, --num_sessions   Number of sessions per iSCSI target
 
 Examples:
-  $0 192.168.1.100 4
+  $0 -t 192.168.1.100 -n 4
+  $0 --tgt_ip 192.168.1.100 --num_sessions 4
   $0 --help
 
 Note: This script requires root privileges to execute iSCSI commands.
@@ -63,15 +62,17 @@ while [ $# -gt 0 ]; do
         -h|--help)
             show_help
             ;;
+        -t|--tgt_ip)
+            shift
+            cnode_external_ip="$1"
+            ;;
+        -n|--num_sessions)
+            shift
+            num_of_sessions="$1"
+            ;;
         *)
-            if [ -z "$cnode_external_ip" ]; then
-                cnode_external_ip="$1"
-            elif [ -z "$num_of_sessions" ]; then
-                num_of_sessions="$1"
-            else
-                echo "Error: Too many arguments provided"
-                show_help
-            fi
+            echo "Error: Unknown option: $1"
+            show_help
             ;;
     esac
     shift
@@ -79,7 +80,7 @@ done
 
 # Check if required parameters are provided
 if [ -z "$cnode_external_ip" ] || [ -z "$num_of_sessions" ]; then
-    echo "Error: Missing required arguments"
+    echo "Error: Missing required arguments --tgt_ip and/or --num_sessions"
     show_help
 fi
 
