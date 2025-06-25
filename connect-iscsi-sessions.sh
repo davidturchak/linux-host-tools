@@ -7,7 +7,7 @@ show_help() {
     cat << EOF
 Usage: $0 [-h|--help] -t|--tgt_ip <ip_address> -n|--num_sessions <num_of_sessions>
 
-Configure iSCSI connections with specified number of sessions per target.
+Configure iSCSI connections with specified number of sessions per cnode target.
 
 Options:
   -h, --help           Display this help message and exit
