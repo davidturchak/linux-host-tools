@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script to manage iSCSI configuration
-# Version: 1.0.0
+# Version: 1.1.0
 
 # Exit on error, undefined variables, and pipe failures
 set -euo pipefail
@@ -13,29 +13,26 @@ usage() {
 Usage: $0 [OPTIONS]
 
 This script manages iSCSI configuration by updating parameters in iscsid.conf,
-handling session disconnection/reconnection, and restarting necessary services.
+handling session disconnection/reconnection, restarting necessary services,
+or displaying current parameter values.
 
 Options:
   -p, --param <parameter>    iSCSI parameter to modify (e.g., login_timeout)
-  -v, --value <value>         Value to set for the specified parameter (positive integer)
+  -v, --value <value>        Value to set for the specified parameter (positive integer)
+  --show                     Display current node.conn[0].timeo.* parameters
   -h, --help                 Display this help message and exit
 
 Examples:
   $0 -p login_timeout -v 30
   $0 --param logout_timeout --value 15
+  $0 --show
 
 Notes:
 - Requires root privileges
 - Parameter names must match valid iscsid.conf node.conn[0].timeo.* settings
 - Values must be positive integers
 - Backup of iscsid.conf is created before modification
-
-Exit Codes:
-  0: Success
-  1: General error
-  2: Invalid parameters
-  3: No root privileges
-  4: iSCSI configuration file not found
+- Use --show to view current settings without making changes
 EOF
     exit 0
 }
@@ -64,6 +61,24 @@ validate_inputs() {
         echo "Error: Parameter value must be a positive integer" >&2
         exit 2
     fi
+}
+
+# Function to show current node.conn[0].timeo.* parameters
+show_parameters() {
+    local config_file="/etc/iscsi/iscsid.conf"
+    
+    # Check if config file exists
+    if [[ ! -f "$config_file" ]]; then
+        echo "Error: iSCSI configuration file not found at $config_file" >&2
+        exit 4
+    fi
+    
+    echo "Current node.conn[0].timeo.* parameters:"
+    grep "^node\.conn\[0\]\.timeo\." "$config_file" | while IFS= read -r line; do
+        echo "$line"
+    done
+    
+    exit 0
 }
 
 # Function to get the IP of the first connected iSCSI session
@@ -127,6 +142,7 @@ discover_and_connect_targets() {
 }
 
 # Parse command line arguments
+ShowParams=false
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -p|--param)
@@ -135,6 +151,9 @@ while [[ $# -gt 0 ]]; do
         -v|--value)
             ParamVal="$2"
             shift 2 ;;
+        --show)
+            ShowParams=true
+            shift ;;
         -h|--help)
             usage ;;
         *)
@@ -143,13 +162,19 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Check if required parameters are provided
+# Check if show parameters is requested
+if [[ "$ShowParams" == true ]]; then
+    check_root
+    show_parameters
+fi
+
+# Check if required parameters are provided for modification
 if [[ -z ${ParamName:-} || -z ${ParamVal:-} ]]; then
-    echo "Error: Missing required parameters" >&2
+    echo "Error: Missing required parameters for modification" >&2
     usage
 fi
 
-# Main execution
+# Main execution for parameter modification
 check_root
 validate_inputs "$ParamName" "$ParamVal"
 
