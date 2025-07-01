@@ -8,6 +8,7 @@ display_usage() {
     echo "  -x, --xfersize <xfersize>     Set xfersize value (default: 128k)"
     echo "  -s, --seekpct <seekpct>       Set seekpct value (default: EOF)"
     echo "  -t, --forthreads <forthreads> Set forthreads value (default: 20)"
+    echo "  --skip-rescan                Skip SCSI rescan"
     exit 1
 }
 
@@ -17,23 +18,24 @@ xfersize=128k
 seekpct=EOF
 forthreads=20
 compratio=3
+skip_rescan=false
 
 # Parse arguments
-while getopts ":r:x:s:t:" opt; do
-    case $opt in
-        r) rdpct="$OPTARG" ;;
-        x) xfersize="$OPTARG" ;;
-        s) seekpct="$OPTARG" ;;
-        t) forthreads="$OPTARG" ;;
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -r|--rdpct) rdpct="$2"; shift 2 ;;
+        -x|--xfersize) xfersize="$2"; shift 2 ;;
+        -s|--seekpct) seekpct="$2"; shift 2 ;;
+        -t|--forthreads) forthreads="$2"; shift 2 ;;
+        --skip-rescan) skip_rescan=true; shift ;;
         *) display_usage ;;
     esac
 done
 
-# Shift the parsed arguments so that $1 becomes the first non-option argument (if any)
-shift $((OPTIND - 1))
-
-# Other parts of the script remain unchanged
-sudo /usr/bin/scsi-rescan -r
+# Perform SCSI rescan unless skip_rescan is true
+if [ "$skip_rescan" != "true" ]; then
+    sudo /usr/bin/scsi-rescan -r
+fi
 
 # Set initial value for drive index
 d=1
