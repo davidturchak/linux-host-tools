@@ -101,7 +101,7 @@ echo "Starting iSCSI configuration for $cnode_external_ip with $num_of_sessions 
 
 # Flush multipath and clean up existing sessions
 multipath -F || { echo "Error: Failed to flush multipath"; exit 1; }
-iscsiadm -m node -U all || { echo "Error: Failed to unload iSCSI sessions"; exit 1; }
+iscsiadm -m node -U all || { echo "Error: Failed to unload iSCSI sessions"; }
 
 # Clean up node databases
 rm -rf /var/lib/iscsi/nodes/* /etc/iscsi/nodes/* || { echo "Error: Failed to clean node databases"; exit 1; }
