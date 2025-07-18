@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#tese
 # Help message function
 show_help() {
     echo "Usage: $0 --ip1 <IP1> --ip2 <IP2> --nic <interface> [--output <file>]"
